@@ -1,3 +1,5 @@
+
+
 type UnitsWrapperProps = {
   unitsOpen: boolean;
   setUnitsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,7 +20,7 @@ const UnitsWrapper = ({ unitsOpen, setUnitsOpen, units, setUnits }: UnitsWrapper
     return(
        <header className="header">
         <div className="logo">
-          <img src="./src/assets/icons/logo.svg" alt="logo" />
+          <img src="/logo.svg" alt="logo" />
         </div> 
             <div className="units-wrapper">
           <button className="units" onClick={() => setUnitsOpen(!unitsOpen)}>
