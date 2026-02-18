@@ -21,7 +21,6 @@ Modern weather application built with **React**, **TypeScript**, and **Vite** th
 - TypeScript
 - Vite
 - CSS
-- ESLint
 
 ## 📦 Installation & Setup
 

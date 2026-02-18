@@ -9,55 +9,15 @@ import UnitsWrapper from "./components/UnitsWrapper";
 import ErrorMessage from "./components/ErrorMessage";
 import Loader from "./components/Loader";
 import Hero from "./components/Hero";
+import { useWeather } from "./context/WeatherContext";
 
-type Units = {
-  temperature: "celsius" | "fahrenheit";
-  windSpeed: "kmh" | "mph";
-  precipitation: "mm" | "inch";
-};
-
-type WeatherData = {
-  current: {
-    apparent_temperature: number;
-    precipitation: number;
-    relative_humidity_2m: number;
-    temperature_2m: number;
-    weather_code: number;
-    time: string;
-    wind_speed_10m: number;
-  };
-  current_units: {
-    apparent_temperature: string;
-    precipitation: string;
-    relative_humidity_2m: string;
-    temperature_2m: string;
-    wind_speed_10m: string;
-  }
-  hourly: {
-    time: string[];
-    temperature_2m: number[];
-    weather_code: number[];
-  };
-  daily: {
-    time: string[];
-    temperature_2m_max: number[];
-    temperature_2m_min: number[];
-    weather_code: number[];
-  };
-};
 
 const getLongDay = (d: string) =>
   new Date(d).toLocaleDateString("en-US", { weekday: "long" });
 function App() {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [unitsOpen, setUnitsOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [units, setUnits] = useState<Units>({
-    temperature: "celsius",
-    windSpeed: "kmh",
-    precipitation: "mm",
-  });
+  const { units, setUnits, error, setError, weather, setWeather, fetchWeatherData } = useWeather();
   const [dayChecked, setDayChecked] = useState(getLongDay(new Date().toISOString()));
   const [city, setCity] = useState("");
   const [locationName, setLocationName] = useState("Berlin, DE");
@@ -81,23 +41,6 @@ function App() {
       return acc;
     }, [] as { time: string; temp: number; weatherCode: number }[]);
   }, [weather, dayChecked]);
-
-  const fetchWeatherData = async (lat: number, lon: number) => {
-    setError(null);
-    try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,precipitation,relative_humidity_2m,wind_speed_10m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=${units.temperature}&wind_speed_unit=${units.windSpeed}&precipitation_unit=${units.precipitation}&timezone=auto`,
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch weather data");
-      }
-      const data: WeatherData = await response.json();
-      return data;
-    } catch (error) {
-      setError("Something went wrong. Please try again later.");
-      return null;
-    }
-  };
 
   useEffect(() => {
     const getDefaultWeather = async () => {
